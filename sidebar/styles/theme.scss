@@ -51,7 +51,8 @@
   text-decoration: none;
   border: 2px solid hsl(var(--color-border));
   border-radius: 9999px;
-  transition: padding 0.25s cubic-bezier(0.215, 0.61, 0.355, 1),
+  transition:
+    padding 0.25s cubic-bezier(0.215, 0.61, 0.355, 1),
     background-color 0.25s cubic-bezier(0.215, 0.61, 0.355, 1);
   cursor: pointer;
 
@@ -81,6 +82,7 @@
   text-decoration: none;
   border: 1px solid hsl(var(--color-border));
   border-radius: 16px;
-  transition: padding 0.25s cubic-bezier(0.215, 0.61, 0.355, 1),
+  transition:
+    padding 0.25s cubic-bezier(0.215, 0.61, 0.355, 1),
     background-color 0.25s cubic-bezier(0.215, 0.61, 0.355, 1);
 }

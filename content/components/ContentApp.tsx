@@ -1,4 +1,4 @@
-import styles from "./ContentApp.module.scss";
+import styles from './ContentApp.module.scss'
 
 export const ContentApp = () => {
   return (
@@ -6,5 +6,5 @@ export const ContentApp = () => {
       <h1>Content App</h1>
       <p>This is the Content App.</p>
     </div>
-  );
-};
+  )
+}
