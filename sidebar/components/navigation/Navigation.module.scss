@@ -1,0 +1,19 @@
+.navigation {
+  ul {
+    display: flex;
+    justify-content: space-around;
+    background-color: hsl(var(--color-bg-secondary));
+    margin: 0;
+    padding: 8px;
+    gap: 8px;
+    list-style: none;
+
+    li {
+      flex: 1;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

@@ -1,0 +1,122 @@
+@use "variables";
+@use "theme";
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  font-size: 62.5%;
+}
+
+body {
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  color: hsl(var(--color-font));
+  font-size: 1.6rem;
+  font-family: var(--font-brand);
+  font-weight: 400;
+  background: hsl(var(--color-bg));
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat-y;
+  overflow-x: hidden;
+}
+
+#__next {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+::selection {
+  color: hsl(var(--color-font-inverse));
+  text-shadow: none;
+  background: hsl(var(--color-bg-button));
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 3.4rem;
+  line-height: 1.5;
+}
+
+h2 {
+  font-size: 3rem;
+  line-height: 1.5;
+}
+
+h3 {
+  font-size: 2.6rem;
+  line-height: 1.2;
+}
+
+h4 {
+  font-size: 2.4rem;
+  line-height: 1.5;
+}
+
+h5 {
+  font-size: 2.2rem;
+  line-height: 1.5;
+}
+
+h6 {
+  font-size: 2rem;
+  line-height: 1.5;
+}
+
+p {
+  margin-top: 0;
+}
+
+button,
+a {
+  color: hsl(var(--color-font));
+  font-family: hsl(var(--font-brand));
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  color: hsl(var(--color-font));
+  font-family: hsl(var(--font-brand));
+  font-size: 1.6rem;
+  background-color: hsl(var(--color-bg-input));
+}
+
+.visuallyHidden {
+  &:not(:focus):not(:active) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+  }
+}
+
+.container {
+  max-width: 100vw;
+  width: 100%;
+  padding: 8px;
+}
