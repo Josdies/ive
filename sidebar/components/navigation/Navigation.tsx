@@ -1,21 +1,32 @@
-import { Pages } from '../../pages/SidebarApp'
+import clsx from 'clsx'
+import { useNavigationStore } from '../../store/useNavigationStore'
 import styles from './Navigation.module.scss'
+import { useShallow } from 'zustand/shallow'
 
-type NavigationProps = {
-  setPage: (page: Pages) => void
-}
+export const Navigation = () => {
+  const { page, setPage } = useNavigationStore(
+    useShallow((state) => ({
+      page: state.page,
+      setPage: state.setPage,
+    })),
+  )
 
-export const Navigation = ({ setPage }: NavigationProps) => {
   return (
     <nav className={styles.navigation}>
       <ul>
         <li>
-          <button className='button primary' onClick={() => setPage('scripts')}>
+          <button
+            className={clsx('button primary', page === 'scripts' && 'active')}
+            onClick={() => setPage('scripts')}
+          >
             Scripts
           </button>
         </li>
         <li>
-          <button className='button primary' onClick={() => setPage('connect')}>
+          <button
+            className={clsx('button primary', page === 'connect' && 'active')}
+            onClick={() => setPage('connect')}
+          >
             Connect
           </button>
         </li>

@@ -66,7 +66,8 @@
     background-color: hsl(var(--color-bg-button-inverse));
     border-color: hsl(var(--color-border));
 
-    &:hover {
+    &:hover,
+    &.active {
       background-color: hsl(var(--color-bg-button-hover-inverse));
     }
   }
