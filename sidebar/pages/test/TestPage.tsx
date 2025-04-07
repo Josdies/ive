@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useHandyStore } from '../../store/useHandyStore'
 import { useShallow } from 'zustand/shallow'
 import { DeviceInfo } from '../../components/deviceInfo/DeviceInfo'
@@ -26,6 +26,18 @@ export const TestPage = () => {
   // Sync interval for periodic sync
   const syncIntervalRef = useRef<number | null>(null)
 
+  // Track script setup status
+  const [isScriptSetup, setIsScriptSetup] = useState(false)
+  const [isSettingUp, setIsSettingUp] = useState(false)
+  const [setupStatus, setSetupStatus] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle')
+
+  // Video state tracking
+  const shouldPlayAfterSetupRef = useRef(false)
+  const videoPositionRef = useRef(0)
+  const videoRateRef = useRef(1)
+
   // Clean up intervals on unmount
   useEffect(() => {
     return () => {
@@ -36,118 +48,252 @@ export const TestPage = () => {
     }
   }, [])
 
-  // When connected status changes, handle script setup with delay
+  // Initial script setup when connected
   useEffect(() => {
-    let setupTimer: number | null = null
+    if (isConnected && !isScriptSetup && !isSettingUp) {
+      setIsSettingUp(true)
+      setSetupStatus('loading')
 
-    if (isConnected) {
-      // Give a slight delay to ensure connection is established
-      setupTimer = window.setTimeout(() => {
-        setupScript(DEMO_SCRIPT_URL).then((success) => {
-          if (!success) {
-            console.warn('Script setup failed, trying again in 1s...')
-            // Try again after a second if failed
-            window.setTimeout(() => {
-              setupScript(DEMO_SCRIPT_URL)
+      const setupWithRetry = async () => {
+        try {
+          const success = await setupScript(DEMO_SCRIPT_URL)
+
+          if (success) {
+            setIsScriptSetup(true)
+            setSetupStatus('success')
+
+            // If video was playing, resume device playback
+            if (shouldPlayAfterSetupRef.current && videoRef.current) {
+              play(videoRef.current.currentTime, videoRef.current.playbackRate)
+              setupSyncInterval()
+            }
+          } else {
+            // Try once more after a short delay
+            setTimeout(async () => {
+              try {
+                const retrySuccess = await setupScript(DEMO_SCRIPT_URL)
+                setIsScriptSetup(retrySuccess)
+                setSetupStatus(retrySuccess ? 'success' : 'error')
+
+                if (
+                  retrySuccess &&
+                  shouldPlayAfterSetupRef.current &&
+                  videoRef.current
+                ) {
+                  play(
+                    videoRef.current.currentTime,
+                    videoRef.current.playbackRate,
+                  )
+                  setupSyncInterval()
+                }
+              } catch {
+                setSetupStatus('error')
+              } finally {
+                setIsSettingUp(false)
+              }
             }, 1000)
+            return
           }
-        })
-      }, 1000)
+        } catch {
+          setSetupStatus('error')
+        } finally {
+          setIsSettingUp(false)
+        }
+      }
+
+      setupWithRetry()
     }
 
-    return () => {
-      if (setupTimer !== null) {
-        window.clearTimeout(setupTimer)
-      }
+    // Reset setup status when disconnected
+    if (!isConnected) {
+      setIsScriptSetup(false)
+      setSetupStatus('idle')
+      shouldPlayAfterSetupRef.current = false
     }
-  }, [isConnected, setupScript])
+  }, [isConnected, isScriptSetup, isSettingUp, setupScript, play])
+
+  // Setup sync interval
+  const setupSyncInterval = () => {
+    if (syncIntervalRef.current !== null) {
+      window.clearInterval(syncIntervalRef.current)
+    }
+
+    syncIntervalRef.current = window.setInterval(() => {
+      if (videoRef.current && isConnected && !videoRef.current.paused) {
+        syncVideoTime(videoRef.current.currentTime)
+      } else if (syncIntervalRef.current !== null) {
+        window.clearInterval(syncIntervalRef.current)
+        syncIntervalRef.current = null
+      }
+    }, 5000) // Sync every 5 seconds
+  }
 
   // Handle video play
   const handleVideoPlay = () => {
-    try {
-      if (videoRef.current && isConnected) {
-        // Start playback
-        play(videoRef.current.currentTime, videoRef.current.playbackRate)
+    if (!videoRef.current || !isConnected) return
 
-        // Set up periodic sync
-        if (syncIntervalRef.current !== null) {
-          window.clearInterval(syncIntervalRef.current)
-        }
+    // Update tracking refs
+    shouldPlayAfterSetupRef.current = true
+    videoPositionRef.current = videoRef.current.currentTime
+    videoRateRef.current = videoRef.current.playbackRate
 
-        // Use window.setInterval for numeric ID and proper cleanup
-        syncIntervalRef.current = window.setInterval(() => {
-          if (videoRef.current && isConnected && !videoRef.current.paused) {
-            syncVideoTime(videoRef.current.currentTime)
-          } else if (syncIntervalRef.current !== null) {
-            window.clearInterval(syncIntervalRef.current)
-            syncIntervalRef.current = null
-          }
-        }, 5000) // Sync every 5 seconds
+    // If script is already set up, start playback immediately
+    if (isScriptSetup) {
+      play(videoRef.current.currentTime, videoRef.current.playbackRate)
+      setupSyncInterval()
+    } else {
+      // Script setup is in progress - video will continue playing
+      // We'll sync with device once setup completes (via useEffect)
+      console.log(
+        'Video playing but script not ready yet - will sync when ready',
+      )
+
+      // If we're not currently setting up, trigger setup
+      if (!isSettingUp && setupStatus !== 'loading') {
+        setIsSettingUp(true)
+        setSetupStatus('loading')
+
+        setupScript(DEMO_SCRIPT_URL)
+          .then((success) => {
+            setIsScriptSetup(success)
+            setSetupStatus(success ? 'success' : 'error')
+            setIsSettingUp(false)
+
+            if (
+              success &&
+              shouldPlayAfterSetupRef.current &&
+              videoRef.current &&
+              !videoRef.current.paused
+            ) {
+              play(videoRef.current.currentTime, videoRef.current.playbackRate)
+              setupSyncInterval()
+            }
+          })
+          .catch(() => {
+            setSetupStatus('error')
+            setIsSettingUp(false)
+          })
       }
-    } catch (err) {
-      console.error('Error during video play:', err)
     }
   }
 
   // Handle video pause
   const handleVideoPause = () => {
-    try {
-      if (isConnected) {
-        stop()
+    shouldPlayAfterSetupRef.current = false
 
-        // Clear sync interval
-        if (syncIntervalRef.current !== null) {
-          window.clearInterval(syncIntervalRef.current)
-          syncIntervalRef.current = null
-        }
+    if (isConnected) {
+      stop()
+
+      // Clear sync interval
+      if (syncIntervalRef.current !== null) {
+        window.clearInterval(syncIntervalRef.current)
+        syncIntervalRef.current = null
       }
-    } catch (err) {
-      console.error('Error during video pause:', err)
     }
   }
 
   // Handle video seeking
   const handleVideoSeeking = () => {
-    try {
-      if (isConnected) {
-        stop() // Stop first when seeking to prevent unexpected behavior
+    if (isConnected) {
+      stop() // Stop first when seeking to prevent unexpected behavior
 
-        // Clear sync interval
-        if (syncIntervalRef.current !== null) {
-          window.clearInterval(syncIntervalRef.current)
-          syncIntervalRef.current = null
-        }
+      // Clear sync interval
+      if (syncIntervalRef.current !== null) {
+        window.clearInterval(syncIntervalRef.current)
+        syncIntervalRef.current = null
       }
-    } catch (err) {
-      console.error('Error during video seeking:', err)
     }
   }
 
   // Handle seeking end
   const handleSeekEnd = () => {
-    try {
-      if (videoRef.current && isConnected && !videoRef.current.paused) {
+    if (videoRef.current && isConnected && !videoRef.current.paused) {
+      videoPositionRef.current = videoRef.current.currentTime
+
+      if (isScriptSetup) {
         play(videoRef.current.currentTime, videoRef.current.playbackRate) // Resume playback with new position
+        setupSyncInterval()
+      } else {
+        // Will be handled when script setup completes
+        shouldPlayAfterSetupRef.current = true
       }
-    } catch (err) {
-      console.error('Error after seek end:', err)
     }
   }
 
   // Handle playback rate change
   const handleRateChange = () => {
-    try {
-      if (videoRef.current && isConnected && !videoRef.current.paused) {
-        // We need to stop and restart with new playback rate
-        stop().then(() => {
-          if (videoRef.current) {
-            play(videoRef.current.currentTime, videoRef.current.playbackRate)
-          }
-        })
-      }
-    } catch (err) {
-      console.error('Error during playback rate change:', err)
+    if (!videoRef.current) return
+
+    videoRateRef.current = videoRef.current.playbackRate
+
+    if (isConnected && !videoRef.current.paused && isScriptSetup) {
+      // We need to stop and restart with new playback rate
+      stop().then(() => {
+        if (videoRef.current && !videoRef.current.paused) {
+          play(videoRef.current.currentTime, videoRef.current.playbackRate)
+          setupSyncInterval()
+        }
+      })
     }
+  }
+
+  // Get status indicator styles
+  const getStatusIndicator = () => {
+    if (!isConnected) return null
+
+    if (setupStatus === 'loading') {
+      return (
+        <div
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            backgroundColor: 'rgba(255, 165, 0, 0.1)',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 165, 0, 0.4)',
+            fontSize: '0.85rem',
+          }}
+        >
+          Setting up synchronization...
+        </div>
+      )
+    }
+
+    if (setupStatus === 'error') {
+      return (
+        <div
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 0, 0, 0.4)',
+            fontSize: '0.85rem',
+          }}
+        >
+          Synchronization error. Video will play but device won't sync. Try
+          reconnecting your device.
+        </div>
+      )
+    }
+
+    if (setupStatus === 'success') {
+      return (
+        <div
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            backgroundColor: 'rgba(0, 255, 0, 0.1)',
+            borderRadius: '8px',
+            border: '1px solid rgba(0, 255, 0, 0.4)',
+            fontSize: '0.85rem',
+          }}
+        >
+          Synchronization ready
+        </div>
+      )
+    }
+
+    return null
   }
 
   return (
@@ -156,6 +302,8 @@ export const TestPage = () => {
       <DeviceInfo />
       {isConnected && (
         <div style={{ marginTop: '16px' }}>
+          {getStatusIndicator()}
+
           <video
             ref={videoRef}
             width='100%'
