@@ -32,8 +32,8 @@ type HandyState = {
 type HandyActions = {
   setConfig: (config: Partial<HandyConfig>) => void
   setConnectionKey: (key: string) => void
-  setOffset: (offset: number) => void
-  setStrokeSettings: (min: number, max: number) => void
+  setOffset: (offset: number) => Promise<boolean>
+  setStrokeSettings: (min: number, max: number) => Promise<boolean>
   setApi: (api: HandyApi | null) => void
   setEventSource: (eventSource: EventSource | null) => void
   setIsConnected: (isConnected: boolean) => void
@@ -67,7 +67,7 @@ export const useHandyStore = create<HandyStore>()(
         offset: 0,
         stroke: {
           min: 0,
-          max: 100,
+          max: 1,
         },
       },
       isConnected: false,
@@ -88,15 +88,43 @@ export const useHandyStore = create<HandyStore>()(
           config: { ...state.config, connectionKey },
         })),
 
-      setOffset: (offset) =>
+      setOffset: async (offset) => {
         set((state) => ({
           config: { ...state.config, offset },
-        })),
+        }))
 
-      setStrokeSettings: (min, max) =>
+        // Apply to device if connected
+        const { api, isConnected } = get()
+        if (api && isConnected) {
+          try {
+            await api.setOffset(offset)
+            return true
+          } catch (error) {
+            console.error('Error setting offset on device:', error)
+            return false
+          }
+        }
+        return true
+      },
+
+      setStrokeSettings: async (min, max) => {
         set((state) => ({
           config: { ...state.config, stroke: { min, max } },
-        })),
+        }))
+
+        // Apply to device if connected
+        const { api, isConnected } = get()
+        if (api && isConnected) {
+          try {
+            await api.setStrokeSettings({ min, max })
+            return true
+          } catch (error) {
+            console.error('Error setting stroke settings on device:', error)
+            return false
+          }
+        }
+        return true
+      },
 
       setApi: (api) => set({ api }),
       setEventSource: (eventSource) => set({ eventSource }),
@@ -203,6 +231,13 @@ export const useHandyStore = create<HandyStore>()(
               },
             }))
           }
+
+          // Apply current offset and stroke settings to device
+          await api.setOffset(state.config.offset)
+          await api.setStrokeSettings({
+            min: state.config.stroke.min,
+            max: state.config.stroke.max,
+          })
 
           return true
         } catch (error) {

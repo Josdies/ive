@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Slider } from '@mantine/core'
+import { Slider, RangeSlider } from '@mantine/core'
 import { useHandyStore, useHandySetup } from '../../store/useHandyStore'
 import { useShallow } from 'zustand/shallow'
 import { DeviceInfo } from '../deviceInfo/DeviceInfo'
@@ -14,6 +14,7 @@ export const HandyConnect = () => {
     connect,
     disconnect,
     setOffset,
+    setStrokeSettings,
     setConnectionKey: storeSetConnectionKey,
   } = useHandyStore(
     useShallow((state) => ({
@@ -23,6 +24,7 @@ export const HandyConnect = () => {
       connect: state.connect,
       disconnect: state.disconnect,
       setOffset: state.setOffset,
+      setStrokeSettings: state.setStrokeSettings,
       setConnectionKey: state.setConnectionKey,
     })),
   )
@@ -32,6 +34,7 @@ export const HandyConnect = () => {
 
   const [connectionKey, setConnectionKey] = useState('')
   const [currentOffset, setCurrentOffset] = useState(0)
+  const [strokeRange, setStrokeRange] = useState<[number, number]>([0, 1])
 
   useEffect(() => {
     if (config.connectionKey) {
@@ -42,6 +45,10 @@ export const HandyConnect = () => {
   useEffect(() => {
     setCurrentOffset(config.offset)
   }, [config.offset])
+
+  useEffect(() => {
+    setStrokeRange([config.stroke.min, config.stroke.max])
+  }, [config.stroke])
 
   useEffect(() => {
     if (connectionKey && connectionKey !== config.connectionKey) {
@@ -63,11 +70,26 @@ export const HandyConnect = () => {
   }
 
   const handleOffsetChange = (value: number) => {
+    setCurrentOffset(value)
+  }
+
+  const handleOffsetChangeEnd = async (value: number) => {
     try {
-      setCurrentOffset(value)
-      setOffset(value)
+      await setOffset(value)
     } catch (err) {
       console.error('Error changing offset:', err)
+    }
+  }
+
+  const handleStrokeRangeChange = (value: [number, number]) => {
+    setStrokeRange(value)
+  }
+
+  const handleStrokeRangeChangeEnd = async (value: [number, number]) => {
+    try {
+      await setStrokeSettings(value[0], value[1])
+    } catch (err) {
+      console.error('Error changing stroke settings:', err)
     }
   }
 
@@ -107,6 +129,7 @@ export const HandyConnect = () => {
       {isConnected && (
         <div className={styles.settings}>
           <h3 className='header3'>Settings</h3>
+
           <label htmlFor='offset'>
             Offset: <strong>{currentOffset}ms</strong> (adjust timing between
             video and device)
@@ -117,12 +140,39 @@ export const HandyConnect = () => {
             max={500}
             value={currentOffset}
             onChange={handleOffsetChange}
+            onChangeEnd={handleOffsetChangeEnd}
             marks={[
               { value: -500, label: '-500ms' },
               { value: -250, label: '-250ms' },
               { value: 0, label: '0ms' },
               { value: 250, label: '250ms' },
               { value: 500, label: '500ms' },
+            ]}
+            className={styles.offsetSlider}
+          />
+
+          <label htmlFor='stroke-range'>
+            Stroke Range:{' '}
+            <strong>
+              {(strokeRange[0] * 100).toFixed(0)}% -{' '}
+              {(strokeRange[1] * 100).toFixed(0)}%
+            </strong>
+          </label>
+          <RangeSlider
+            id='stroke-range'
+            min={0}
+            max={1}
+            step={0.01}
+            minRange={0.05}
+            value={strokeRange}
+            onChange={handleStrokeRangeChange}
+            onChangeEnd={handleStrokeRangeChangeEnd}
+            marks={[
+              { value: 0, label: '0%' },
+              { value: 0.25, label: '25%' },
+              { value: 0.5, label: '50%' },
+              { value: 0.75, label: '75%' },
+              { value: 1, label: '100%' },
             ]}
             className={styles.offsetSlider}
           />
