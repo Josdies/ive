@@ -1,7 +1,6 @@
-import { useShallow } from 'zustand/shallow'
-import { useHapticStore } from '../../store/useHapticStore'
 import { useState, useEffect, useRef } from 'react'
-import { useHandy } from '../../hooks/useHandy'
+import { useHandyStore, useHandySetup } from '../../store/useHandyStore'
+import { useShallow } from 'zustand/shallow'
 
 // Sample video and script URLs for testing
 const DEMO_VIDEO_URL =
@@ -10,25 +9,8 @@ const DEMO_SCRIPT_URL =
   'https://sweettecheu.s3.eu-central-1.amazonaws.com/testsync/sync_video_2021.csv'
 
 export const HandyConnect = () => {
-  const { config, setConfig } = useHapticStore(
-    useShallow((state) => ({
-      config: state.config,
-      setConfig: state.setConfig,
-    })),
-  )
-
-  const [connectionKey, setConnectionKey] = useState('')
-  const [showVideoPlayer, setShowVideoPlayer] = useState(false)
-  const [currentOffset, setCurrentOffset] = useState(0)
-
-  // Video player ref
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  // Sync interval for periodic sync
-  const syncIntervalRef = useRef<number | null>(null)
-
-  // Initialize Handy hook
   const {
+    config,
     isConnected,
     deviceInfo,
     isPlaying,
@@ -40,14 +22,49 @@ export const HandyConnect = () => {
     stop,
     syncVideoTime,
     setOffset,
-  } = useHandy(config.handy)
+    setConnectionKey: storeSetConnectionKey,
+  } = useHandyStore(
+    useShallow((state) => ({
+      config: state.config,
+      isConnected: state.isConnected,
+      deviceInfo: state.deviceInfo,
+      isPlaying: state.isPlaying,
+      error: state.error,
+      connect: state.connect,
+      disconnect: state.disconnect,
+      setupScript: state.setupScript,
+      play: state.play,
+      stop: state.stop,
+      syncVideoTime: state.syncVideoTime,
+      setOffset: state.setOffset,
+      setConnectionKey: state.setConnectionKey,
+    })),
+  )
+
+  // Initialize Handy API
+  useHandySetup()
+
+  const [connectionKey, setConnectionKey] = useState('')
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false)
+  const [currentOffset, setCurrentOffset] = useState(0)
+
+  // Video player ref
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  // Sync interval for periodic sync
+  const syncIntervalRef = useRef<number | null>(null)
 
   // Load connection key from store
   useEffect(() => {
-    if (config.handy?.connectionKey) {
-      setConnectionKey(config.handy.connectionKey)
+    if (config.connectionKey) {
+      setConnectionKey(config.connectionKey)
     }
-  }, [config.handy?.connectionKey])
+  }, [config.connectionKey])
+
+  // Load offset from store
+  useEffect(() => {
+    setCurrentOffset(config.offset)
+  }, [config.offset])
 
   // Clean up intervals on unmount
   useEffect(() => {
@@ -63,7 +80,10 @@ export const HandyConnect = () => {
   useEffect(() => {
     let setupTimer: number | null = null
 
-    if (isConnected && connectionKey) {
+    if (isConnected) {
+      // Show video player when connected
+      setShowVideoPlayer(true)
+
       // Give a slight delay to ensure connection is established
       setupTimer = window.setTimeout(() => {
         setupScript(DEMO_SCRIPT_URL).then((success) => {
@@ -76,6 +96,8 @@ export const HandyConnect = () => {
           }
         })
       }, 1000)
+    } else {
+      setShowVideoPlayer(false)
     }
 
     return () => {
@@ -83,17 +105,14 @@ export const HandyConnect = () => {
         window.clearTimeout(setupTimer)
       }
     }
-  }, [isConnected, connectionKey, setupScript])
+  }, [isConnected, setupScript])
 
-  // Update config when connection key changes
+  // Update store when connection key changes in component
   useEffect(() => {
-    if (connectionKey && connectionKey !== config.handy?.connectionKey) {
-      setConfig('handy', {
-        ...config.handy,
-        connectionKey,
-      })
+    if (connectionKey && connectionKey !== config.connectionKey) {
+      storeSetConnectionKey(connectionKey)
     }
-  }, [config.handy, connectionKey, setConfig])
+  }, [connectionKey, config.connectionKey, storeSetConnectionKey])
 
   // Handle connect button click
   const handleConnect = async () => {
@@ -105,12 +124,8 @@ export const HandyConnect = () => {
         return
       }
 
-      // Connect
-      const success = await connect()
-      if (success) {
-        setShowVideoPlayer(true)
-        // Script setup is handled by the useEffect
-      }
+      // Connect - success is handled by store effects
+      await connect()
     } catch (err) {
       console.error('Error during connect/disconnect:', err)
     }
@@ -121,7 +136,7 @@ export const HandyConnect = () => {
     try {
       if (videoRef.current && isConnected) {
         // Start playback
-        play(videoRef.current.currentTime)
+        play(videoRef.current.currentTime, videoRef.current.playbackRate)
 
         // Set up periodic sync
         if (syncIntervalRef.current !== null) {
@@ -181,7 +196,7 @@ export const HandyConnect = () => {
   const handleSeekEnd = () => {
     try {
       if (videoRef.current && isConnected && !videoRef.current.paused) {
-        play(videoRef.current.currentTime) // Resume playback with new position
+        play(videoRef.current.currentTime, videoRef.current.playbackRate) // Resume playback with new position
       }
     } catch (err) {
       console.error('Error after seek end:', err)
@@ -195,7 +210,7 @@ export const HandyConnect = () => {
         // We need to stop and restart with new playback rate
         stop().then(() => {
           if (videoRef.current) {
-            play(videoRef.current.currentTime)
+            play(videoRef.current.currentTime, videoRef.current.playbackRate)
           }
         })
       }
