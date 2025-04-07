@@ -10,17 +10,15 @@ const DEMO_SCRIPT_URL =
   'https://sweettecheu.s3.eu-central-1.amazonaws.com/testsync/sync_video_2021.csv'
 
 export const TestPage = () => {
-  const { isConnected, error, setupScript, play, stop, syncVideoTime } =
-    useHandyStore(
-      useShallow((state) => ({
-        isConnected: state.isConnected,
-        error: state.error,
-        setupScript: state.setupScript,
-        play: state.play,
-        stop: state.stop,
-        syncVideoTime: state.syncVideoTime,
-      })),
-    )
+  const { isConnected, setupScript, play, stop, syncVideoTime } = useHandyStore(
+    useShallow((state) => ({
+      isConnected: state.isConnected,
+      setupScript: state.setupScript,
+      play: state.play,
+      stop: state.stop,
+      syncVideoTime: state.syncVideoTime,
+    })),
+  )
 
   // Video player ref
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -156,7 +154,7 @@ export const TestPage = () => {
     <section className='page'>
       <h1 className='header2'>Test Player</h1>
       <DeviceInfo />
-      {isConnected ? (
+      {isConnected && (
         <div style={{ marginTop: '16px' }}>
           <video
             ref={videoRef}
@@ -184,18 +182,6 @@ export const TestPage = () => {
               and seek to test synchronization.
             </p>
           </div>
-        </div>
-      ) : (
-        <div
-          style={{
-            padding: '16px',
-            backgroundColor: 'rgba(255,0,0,0.05)',
-            borderRadius: '8px',
-            textAlign: 'center',
-          }}
-        >
-          <p>Please connect your device first on the Connect page.</p>
-          {error && <p style={{ color: 'red' }}>Error: {error}</p>}
         </div>
       )}
     </section>

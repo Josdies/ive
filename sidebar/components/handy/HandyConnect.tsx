@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
+import { Slider } from '@mantine/core'
 import { useHandyStore, useHandySetup } from '../../store/useHandyStore'
 import { useShallow } from 'zustand/shallow'
 import { DeviceInfo } from '../deviceInfo/DeviceInfo'
+import styles from './HandyConnect.module.scss'
+import clsx from 'clsx'
 
 export const HandyConnect = () => {
   const {
@@ -30,7 +33,6 @@ export const HandyConnect = () => {
   const [connectionKey, setConnectionKey] = useState('')
   const [currentOffset, setCurrentOffset] = useState(0)
 
-  // Load connection key from store
   useEffect(() => {
     if (config.connectionKey) {
       setConnectionKey(config.connectionKey)
@@ -41,106 +43,94 @@ export const HandyConnect = () => {
     setCurrentOffset(config.offset)
   }, [config.offset])
 
-  // Update store when connection key changes in component
   useEffect(() => {
     if (connectionKey && connectionKey !== config.connectionKey) {
       storeSetConnectionKey(connectionKey)
     }
   }, [connectionKey, config.connectionKey, storeSetConnectionKey])
 
-  // Handle connect button click
   const handleConnect = async () => {
     try {
       if (isConnected) {
-        // Disconnect
         await disconnect()
         return
       }
 
-      // Connect - success is handled by store effects
       await connect()
     } catch (err) {
       console.error('Error during connect/disconnect:', err)
     }
   }
 
-  // Handle offset change
-  const handleOffsetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOffsetChange = (value: number) => {
     try {
-      const newOffset = parseInt(e.target.value, 10)
-      setCurrentOffset(newOffset)
-      setOffset(newOffset)
+      setCurrentOffset(value)
+      setOffset(value)
     } catch (err) {
       console.error('Error changing offset:', err)
     }
   }
 
   return (
-    <div className='handy-connect'>
+    <div className={styles.handyConnect}>
       <h1 className='header2'>Connect to Handy</h1>
       <p>Enter your Handy connection key</p>
 
       {error && !isConnected && (
-        <div
-          style={{
-            color: 'red',
-            marginBottom: '10px',
-            padding: '8px',
-            backgroundColor: 'rgba(255,0,0,0.05)',
-            borderRadius: '4px',
-          }}
-        >
-          Error: {error}
-        </div>
+        <div className={styles.errorMessage}>Error: {error}</div>
       )}
 
-      <div style={{ marginBottom: '16px' }}>
-        <input
-          type='text'
-          className='input'
-          placeholder='Connection Key'
-          value={connectionKey}
-          onChange={(e) => {
-            setConnectionKey(e.target.value)
-          }}
-          disabled={isConnected}
-          style={{ marginBottom: '8px' }}
-        />
+      <input
+        type='text'
+        className='input'
+        placeholder='Connection Key'
+        value={connectionKey}
+        onChange={(e) => {
+          setConnectionKey(e.target.value)
+        }}
+        disabled={isConnected}
+      />
 
-        <button
-          className={`button primary ${isConnected ? 'active' : ''}`}
-          onClick={handleConnect}
-        >
-          {isConnected ? 'Disconnect' : 'Connect'}
-        </button>
-      </div>
+      <button
+        className={clsx(
+          'button primary',
+          isConnected && 'active',
+          styles.connectButton,
+        )}
+        onClick={handleConnect}
+      >
+        {isConnected ? 'Disconnect' : 'Connect'}
+      </button>
 
       <DeviceInfo />
 
       {isConnected && (
-        <div style={{ marginTop: '16px' }}>
+        <div className={styles.settings}>
           <h3 className='header3'>Settings</h3>
-
           <label htmlFor='offset'>
             Offset: <strong>{currentOffset}ms</strong> (adjust timing between
             video and device)
           </label>
-          <input
-            type='range'
+          <Slider
             id='offset'
-            min='-500'
-            max='500'
+            min={-500}
+            max={500}
             value={currentOffset}
             onChange={handleOffsetChange}
-            className='input'
-            style={{ width: '100%' }}
+            marks={[
+              { value: -500, label: '-500ms' },
+              { value: -250, label: '-250ms' },
+              { value: 0, label: '0ms' },
+              { value: 250, label: '250ms' },
+              { value: 500, label: '500ms' },
+            ]}
+            className={styles.offsetSlider}
           />
-          <div>
-            <p>
-              Adjust offset and stroke range settings to customize your
-              experience.
-            </p>
-          </div>
+
+          <p>
+            Adjust offset and stroke range settings to customize your
+            experience.
+          </p>
         </div>
       )}
     </div>

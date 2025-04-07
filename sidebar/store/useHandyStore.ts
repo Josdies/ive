@@ -342,7 +342,7 @@ export const useHandyStore = create<HandyStore>()(
 
 // Hook to manage Handy API lifecycle
 export const useHandySetup = () => {
-  const { api, setApi, config, connect, isConnected } = useHandyStore()
+  const { api, setApi, config } = useHandyStore()
 
   // Initialize API on mount
   useEffect(() => {
@@ -355,17 +355,4 @@ export const useHandySetup = () => {
       setApi(newApi)
     }
   }, [api, setApi, config.connectionKey])
-
-  // Auto-connect when connection key is available
-  useEffect(() => {
-    if (
-      config.connectionKey &&
-      config.connectionKey.length >= 5 &&
-      !isConnected &&
-      api
-    ) {
-      console.log('Auto-connecting with saved connection key...')
-      connect()
-    }
-  }, [config.connectionKey, isConnected, connect, api])
 }
