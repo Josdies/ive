@@ -14,12 +14,6 @@ type VideosData = {
 }
 
 export const ScriptsPage = () => {
-  const openUrl = (url: string) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.update(tabs[0].id ?? 0, { url: url })
-    })
-  }
-
   return (
     <section className='page'>
       <h1 className='header2'>Scripts</h1>
@@ -29,7 +23,7 @@ export const ScriptsPage = () => {
           <div
             key={video.id}
             className={styles.videoItem}
-            onClick={() => openUrl(video.stream_url)}
+            onClick={() => chrome.tabs.update({ url: video.stream_url })}
           >
             <div className={styles.thumbnailContainer}>
               <img
