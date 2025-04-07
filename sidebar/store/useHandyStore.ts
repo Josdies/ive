@@ -15,6 +15,7 @@ type HandyConfig = {
     min: number
     max: number
   }
+  wasManuallyDisconnected: boolean
 }
 
 // Main Handy state
@@ -40,6 +41,7 @@ type HandyActions = {
   setDeviceInfo: (deviceInfo: DeviceInfo | null) => void
   setIsPlaying: (isPlaying: boolean) => void
   setError: (error: string | null) => void
+  setWasManuallyDisconnected: (wasDisconnected: boolean) => void
 
   // Core device operations
   connect: () => Promise<boolean>
@@ -69,6 +71,7 @@ export const useHandyStore = create<HandyStore>()(
           min: 0,
           max: 1,
         },
+        wasManuallyDisconnected: false,
       },
       isConnected: false,
       deviceInfo: null,
@@ -86,6 +89,11 @@ export const useHandyStore = create<HandyStore>()(
       setConnectionKey: (connectionKey) =>
         set((state) => ({
           config: { ...state.config, connectionKey },
+        })),
+
+      setWasManuallyDisconnected: (wasManuallyDisconnected) =>
+        set((state) => ({
+          config: { ...state.config, wasManuallyDisconnected },
         })),
 
       setOffset: async (offset) => {
@@ -263,6 +271,10 @@ export const useHandyStore = create<HandyStore>()(
           isConnected: false,
           deviceInfo: null,
           isPlaying: false,
+          config: {
+            ...state.config,
+            wasManuallyDisconnected: true,
+          },
         })
 
         // We always consider disconnect successful for better UX
@@ -377,7 +389,7 @@ export const useHandyStore = create<HandyStore>()(
 
 // Hook to manage Handy API lifecycle
 export const useHandySetup = () => {
-  const { api, setApi, config } = useHandyStore()
+  const { api, setApi, config, isConnected, connect } = useHandyStore()
 
   // Initialize API on mount
   useEffect(() => {
@@ -390,4 +402,25 @@ export const useHandySetup = () => {
       setApi(newApi)
     }
   }, [api, setApi, config.connectionKey])
+
+  // Auto-connect logic: connect if we have a key, we're not already connected, and
+  // the user didn't explicitly disconnect before
+  useEffect(() => {
+    if (
+      config.connectionKey &&
+      config.connectionKey.length >= 5 &&
+      !isConnected &&
+      !config.wasManuallyDisconnected
+    ) {
+      connect().catch((err) => {
+        console.error('Auto-connect failed:', err)
+      })
+    }
+  }, [
+    api,
+    config.connectionKey,
+    config.wasManuallyDisconnected,
+    isConnected,
+    connect,
+  ])
 }
