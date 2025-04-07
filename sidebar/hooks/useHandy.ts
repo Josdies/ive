@@ -286,28 +286,17 @@ export const useHandy = (config: HandyConfig) => {
 
       eventSource.addEventListener('device_status', (event) => {
         console.log('Handy: event: device_status', event)
-        try {
-          const data = JSON.parse(event.data)
-          setIsConnected(data.data.connected)
-          if (data.data.connected && data.data.info) {
-            setDeviceInfo(data.data.info)
-          }
-        } catch (error) {
-          console.error('Error parsing device status event:', error)
-        }
+        const data = JSON.parse(event.data)
+        setIsConnected(data.data.connected)
+        setDeviceInfo(data.data.info)
       })
 
       eventSource.addEventListener('device_connected', (event) => {
         console.log('Handy: event: device_connected', event.data)
-        try {
-          const data = JSON.parse(event.data)
-          setIsConnected(true)
-          if (data.data.info) {
-            setDeviceInfo(data.data.info)
-          }
-        } catch (error) {
-          console.error('Error parsing device connected event:', error)
-        }
+
+        const data = JSON.parse(event.data)
+        setIsConnected(true)
+        setDeviceInfo(data.data.info)
       })
 
       eventSource.addEventListener('device_disconnected', (event) => {
@@ -322,17 +311,6 @@ export const useHandy = (config: HandyConfig) => {
 
       eventSource.addEventListener('hsp_state_changed', (event) => {
         console.log('Handy: event: hsp_state_changed', event.data)
-        try {
-          const data = JSON.parse(event.data)
-          const playState = data.data.data.play_state
-          setIsPlaying(
-            playState === 1 ||
-              playState === 'PLAYING' ||
-              playState === 'playing',
-          )
-        } catch (error) {
-          console.error('Error parsing HSP state changed event:', error)
-        }
       })
 
       // Store refs and state
