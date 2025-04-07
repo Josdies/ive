@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { chromeLocalStorage } from '../../shared/chromeLocalStorage'
+import { chromeLocalStorage } from '../../shared/util/chromeLocalStorage'
 
 export type Haptic = 'handy' | 'intiface'
 

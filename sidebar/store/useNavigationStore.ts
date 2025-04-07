@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { chromeLocalStorage } from '../../shared/chromeLocalStorage'
+import { chromeLocalStorage } from '../../shared/util/chromeLocalStorage'
 
 export type Pages = 'scripts' | 'connect'
 

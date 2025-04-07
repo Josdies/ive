@@ -39,7 +39,7 @@ export const HandyConnect = () => {
     play,
     stop,
     syncVideoTime,
-    setOffset: setHandyOffset,
+    setOffset,
   } = useHandy(config.handy)
 
   // Load connection key from store
@@ -85,6 +85,7 @@ export const HandyConnect = () => {
     }
   }, [isConnected, connectionKey, setupScript])
 
+  // Update config when connection key changes
   useEffect(() => {
     if (connectionKey && connectionKey !== config.handy?.connectionKey) {
       setConfig('handy', {
@@ -208,7 +209,7 @@ export const HandyConnect = () => {
     try {
       const newOffset = parseInt(e.target.value)
       setCurrentOffset(newOffset)
-      setHandyOffset(newOffset)
+      setOffset(newOffset)
     } catch (err) {
       console.error('Error changing offset:', err)
     }
