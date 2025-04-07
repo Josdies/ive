@@ -1,5 +1,5 @@
 .page {
-  padding: 8px;
+  padding: 8px 16px;
 }
 
 .header1 {
@@ -9,16 +9,16 @@
 }
 
 .header2 {
-  color: hsl(var(--color-font-light));
   font-size: 4dvh;
   line-height: 1.12;
   font-weight: 700;
+  margin-bottom: 8px;
 }
 
 .header3 {
-  color: hsl(var(--color-font-light));
   font-size: 2.8rem;
   line-height: 1.12;
+  margin-bottom: 8px;
 }
 
 .header4 {

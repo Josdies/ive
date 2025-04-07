@@ -1,0 +1,15 @@
+.deviceInfo {
+  padding: 12px;
+  background-color: hsl(var(--color-bg));
+  border-radius: 8px;
+  border: 1px solid hsl(var(--color-border));
+
+  &.connected {
+    background-color: rgba(0, 255, 0, 0.1);
+    border-color: rgba(0, 255, 0, 0.4);
+  }
+  &.disconnected {
+    background-color: rgba(255, 0, 0, 0.1);
+    border-color: rgba(255, 0, 0, 0.4);
+  }
+}

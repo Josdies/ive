@@ -4,10 +4,11 @@ import styles from './Navigation.module.scss'
 import { useShallow } from 'zustand/shallow'
 
 export const Navigation = () => {
-  const { page, setPage } = useNavigationStore(
+  const { page, setPage, isDevelopmentMode } = useNavigationStore(
     useShallow((state) => ({
       page: state.page,
       setPage: state.setPage,
+      isDevelopmentMode: state.isDevelopmentMode,
     })),
   )
 
@@ -30,6 +31,16 @@ export const Navigation = () => {
             Connect
           </button>
         </li>
+        {isDevelopmentMode && (
+          <li>
+            <button
+              className={clsx('button primary', page === 'test' && 'active')}
+              onClick={() => setPage('test')}
+            >
+              Test
+            </button>
+          </li>
+        )}
       </ul>
     </nav>
   )
