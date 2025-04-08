@@ -1,10 +1,10 @@
+import { useShallow } from 'zustand/shallow'
 import { Navigation } from '../components/navigation/Navigation'
-import styles from './SidebarApp.module.scss'
 import { ScriptsPage } from './scripts/Scripts'
 import { ConnectPage } from './connect/ConnectPage'
 import { TestPage } from './test/TestPage'
-import { useNavigationStore } from '../store/useNavigationStore'
-import { useShallow } from 'zustand/shallow'
+import { useNavigationStore } from '../../shared/store/useNavigationStore'
+import styles from './SidebarApp.module.scss'
 
 export const SidebarApp = () => {
   const { page, isDevelopmentMode } = useNavigationStore(

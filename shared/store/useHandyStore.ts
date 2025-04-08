@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { chromeLocalStorage } from '../../shared/util/chromeLocalStorage'
+import { chromeLocalStorage } from '../util/chromeLocalStorage'
 import { useEffect } from 'react'
-import { DeviceInfo, HandyApi, createHandyApi } from '../../shared/api/handyApi'
+import { DeviceInfo, HandyApi, createHandyApi } from '../api/handyApi'
 
 const HANDY_BASE_URL = import.meta.env.VITE_HANDY_BASE_URL
 const HANDY_APPLICATION_ID = import.meta.env.VITE_HANDY_APPLICATION_ID

@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Slider, RangeSlider } from '@mantine/core'
-import { useHandyStore, useHandySetup } from '../../store/useHandyStore'
+import {
+  useHandyStore,
+  useHandySetup,
+} from '../../../shared/store/useHandyStore'
 import { useShallow } from 'zustand/shallow'
 import { DeviceInfo } from '../deviceInfo/DeviceInfo'
 import styles from './HandyConnect.module.scss'

@@ -1,7 +1,7 @@
 import clsx from 'clsx'
-import { useNavigationStore } from '../../store/useNavigationStore'
-import styles from './Navigation.module.scss'
 import { useShallow } from 'zustand/shallow'
+import { useNavigationStore } from '../../../shared/store/useNavigationStore'
+import styles from './Navigation.module.scss'
 
 export const Navigation = () => {
   const { page, setPage, isDevelopmentMode } = useNavigationStore(

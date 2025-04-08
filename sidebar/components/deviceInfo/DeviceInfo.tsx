@@ -1,5 +1,5 @@
 import { useShallow } from 'zustand/shallow'
-import { useHandyStore } from '../../store/useHandyStore'
+import { useHandyStore } from '../../../shared/store/useHandyStore'
 import styles from './DeviceInfo.module.scss'
 import clsx from 'clsx'
 

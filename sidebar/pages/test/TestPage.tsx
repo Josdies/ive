@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { useHandyStore } from '../../store/useHandyStore'
+import { useHandyStore } from '../../../shared/store/useHandyStore'
 import { useShallow } from 'zustand/shallow'
 import { DeviceInfo } from '../../components/deviceInfo/DeviceInfo'
 

@@ -1,4 +1,6 @@
 import styles from './ScriptsPage.module.scss'
+import { useNavigationStore } from '../../../shared/store/useNavigationStore'
+
 import VideosJson from '../../../data/videos.json'
 
 type Video = {
@@ -14,6 +16,17 @@ type VideosData = {
 }
 
 export const ScriptsPage = () => {
+  const { setPendingScript } = useNavigationStore()
+
+  const handleVideoClick = (video: Video) => {
+    setPendingScript({
+      url: video.stream_url,
+      scriptUrl: video.script_url,
+    })
+
+    chrome.tabs.update({ url: video.stream_url })
+  }
+
   return (
     <section className='page'>
       <h1 className='header2'>Scripts</h1>
@@ -23,7 +36,7 @@ export const ScriptsPage = () => {
           <div
             key={video.id}
             className={styles.videoItem}
-            onClick={() => chrome.tabs.update({ url: video.stream_url })}
+            onClick={() => handleVideoClick(video)}
           >
             <div className={styles.thumbnailContainer}>
               <img

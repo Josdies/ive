@@ -22,12 +22,5 @@
     "esModuleInterop": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": [
-    "sidebar",
-    "tests",
-    "vite.config.ts",
-    "sidebar/pages/SidebarApp.tsx",
-    "background/background.ts",
-    "content/content.tsx"
-  ]
+  "include": ["sidebar", "background", "content", "shared", "vite.config.ts"]
 }
