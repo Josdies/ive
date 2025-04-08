@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useShallow } from 'zustand/shallow'
-import { useHandyStore } from '../../shared/store/useHandyStore'
+import { useHandySetup, useHandyStore } from '../../shared/store/useHandyStore'
 import { useNavigationStore } from '../../shared/store/useNavigationStore'
 import styles from './ContentApp.module.scss'
 
@@ -22,6 +22,8 @@ export const ContentApp = () => {
         syncVideoTime: state.syncVideoTime,
       })),
     )
+
+  useHandySetup()
 
   // Local state
   const [pendingScript, setPendingScript] = useState<ScriptInfo | null>(null)
