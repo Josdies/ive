@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useShallow } from 'zustand/shallow'
-import { useHandySetup, useHandyStore } from '@/store/useHandyStore'
+import { useHandyStore } from '@/store/useHandyStore'
 import styles from './ContentApp.module.scss'
 
 export const ContentApp = ({ script }: { script: string }) => {
@@ -15,8 +15,6 @@ export const ContentApp = ({ script }: { script: string }) => {
         stop: state.stop,
       })),
     )
-
-  useHandySetup()
 
   // Local state
   const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(

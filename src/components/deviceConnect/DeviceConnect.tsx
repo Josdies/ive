@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Slider, RangeSlider } from '@mantine/core'
 import { useShallow } from 'zustand/shallow'
 import clsx from 'clsx'
-import { useHandySetup, useHandyStore } from '@/store/useHandyStore'
+import { useHandyStore } from '@/store/useHandyStore'
 import { DeviceInfo } from '../deviceInfo/DeviceInfo'
 import styles from './DeviceConnect.module.scss'
 
@@ -15,7 +15,7 @@ export const DeviceConnect = () => {
     disconnect,
     setOffset,
     setStrokeSettings,
-    setConnectionKey: storeSetConnectionKey,
+    setConnectionKey,
   } = useHandyStore(
     useShallow((state) => ({
       config: state.config,
@@ -29,17 +29,14 @@ export const DeviceConnect = () => {
     })),
   )
 
-  // Initialize Handy API
-  useHandySetup()
-
-  const [connectionKey, setConnectionKey] = useState('')
+  const [connectionKey, setLocalConnectionKey] = useState('')
   const [currentOffset, setCurrentOffset] = useState(0)
   const [strokeRange, setStrokeRange] = useState<[number, number]>([0, 1])
 
   // Load initial values from store
   useEffect(() => {
     if (config.connectionKey) {
-      setConnectionKey(config.connectionKey)
+      setLocalConnectionKey(config.connectionKey)
     }
   }, [config.connectionKey])
 
@@ -51,20 +48,30 @@ export const DeviceConnect = () => {
     setStrokeRange([config.stroke.min, config.stroke.max])
   }, [config.stroke])
 
-  useEffect(() => {
-    if (connectionKey && connectionKey !== config.connectionKey) {
-      storeSetConnectionKey(connectionKey)
+  // Update connection key in background when input changes
+  const handleConnectionKeyChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const newKey = e.target.value
+    setLocalConnectionKey(newKey)
+
+    // Debounce the update to background
+    if (newKey.length >= 5) {
+      setConnectionKey(newKey)
     }
-  }, [connectionKey, config.connectionKey, storeSetConnectionKey])
+  }
 
   const handleConnect = async () => {
     try {
       if (isConnected) {
         await disconnect()
-        return
+      } else {
+        // Make sure the connection key is updated before connecting
+        if (connectionKey !== config.connectionKey) {
+          await setConnectionKey(connectionKey)
+        }
+        await connect()
       }
-
-      await connect()
     } catch (err) {
       console.error('Error during connect/disconnect:', err)
     }
@@ -104,7 +111,7 @@ export const DeviceConnect = () => {
           className={clsx('input', styles.keyInput)}
           placeholder='Enter connection key'
           value={connectionKey}
-          onChange={(e) => setConnectionKey(e.target.value)}
+          onChange={handleConnectionKeyChange}
           disabled={isConnected}
         />
 
