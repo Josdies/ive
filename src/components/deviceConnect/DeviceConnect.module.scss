@@ -1,0 +1,70 @@
+.deviceConnect {
+  padding: 12px 0;
+
+  .errorMessage {
+    color: red;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background-color: rgba(255, 0, 0, 0.05);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .connectionForm {
+    margin-bottom: 16px;
+
+    .connectButton {
+      margin-top: 12px;
+      width: 100%;
+    }
+  }
+
+  .deviceStatus {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+
+    &.connected {
+      background-color: rgba(0, 255, 0, 0.1);
+      border: 1px solid rgba(0, 255, 0, 0.3);
+    }
+
+    &.disconnected {
+      background-color: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .deviceDetails {
+      p {
+        margin: 4px 0;
+        font-size: 14px;
+      }
+    }
+  }
+
+  .settings {
+    h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .settingsGroup {
+      margin-bottom: 20px;
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .slider {
+        padding: 0 8px;
+      }
+    }
+  }
+}

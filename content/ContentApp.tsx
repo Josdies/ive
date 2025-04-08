@@ -1,32 +1,24 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useShallow } from 'zustand/shallow'
-import { useHandySetup, useHandyStore } from '../../shared/store/useHandyStore'
-import { useNavigationStore } from '../../shared/store/useNavigationStore'
+import { useHandySetup, useHandyStore } from '@/store/useHandyStore'
 import styles from './ContentApp.module.scss'
 
-type ScriptInfo = {
-  url: string
-  scriptUrl: string
-}
-
-export const ContentApp = () => {
-  // Get state and actions from the existing Handy store
+export const ContentApp = ({ script }: { script: string }) => {
   const { isConnected, isPlaying, setupScript, play, stop, syncVideoTime } =
     useHandyStore(
       useShallow((state) => ({
         isConnected: state.isConnected,
         isPlaying: state.isPlaying,
         setupScript: state.setupScript,
+        syncVideoTime: state.syncVideoTime,
         play: state.play,
         stop: state.stop,
-        syncVideoTime: state.syncVideoTime,
       })),
     )
 
   useHandySetup()
 
   // Local state
-  const [pendingScript, setPendingScript] = useState<ScriptInfo | null>(null)
   const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(
     null,
   )
@@ -35,18 +27,9 @@ export const ContentApp = () => {
 
   const syncIntervalId = useRef<number | null>(null)
 
-  // Get pending script from storage
-  useEffect(() => {
-    const pendingScript = useNavigationStore.getState().pendingScript
-    if (pendingScript) {
-      setPendingScript(pendingScript)
-      useNavigationStore.setState({ pendingScript: null })
-    }
-  }, [])
-
   // Find video element
   useEffect(() => {
-    if (pendingScript && !videoElement) {
+    if (script && !videoElement) {
       const findLargestVideo = () => {
         const videos = Array.from(document.getElementsByTagName('video'))
         if (videos.length === 0) return null
@@ -91,12 +74,12 @@ export const ContentApp = () => {
 
       return () => clearInterval(videoCheckInterval)
     }
-  }, [pendingScript, videoElement])
+  }, [script, videoElement])
 
   // Setup script
   useEffect(() => {
-    if (videoElement && isConnected && pendingScript && !isScriptSetup) {
-      console.log('Setting up script:', pendingScript.scriptUrl)
+    if (videoElement && isConnected && script && !isScriptSetup) {
+      console.log('Setting up script:', script)
 
       // If video is playing, pause it temporarily to prevent sync issues
       const isCurrentlyPlaying = !videoElement.paused
@@ -105,7 +88,7 @@ export const ContentApp = () => {
         videoElement.pause()
       }
 
-      setupScript(pendingScript.scriptUrl)
+      setupScript(script)
         .then((success) => {
           setIsScriptSetup(success)
           console.log('Script setup:', success)
@@ -132,7 +115,7 @@ export const ContentApp = () => {
   }, [
     videoElement,
     isConnected,
-    pendingScript,
+    script,
     isScriptSetup,
     videoWasPlaying,
     setupScript,
@@ -303,7 +286,7 @@ export const ContentApp = () => {
   }, [])
 
   // Only render if we have a pending script
-  if (!pendingScript) {
+  if (!script) {
     return null
   }
 

@@ -20,7 +20,16 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@popup/*": ["./popup/*"],
+      "@background/*": ["./background/*"],
+      "@content/*": ["./content/*"]
+    }
   },
-  "include": ["sidebar", "background", "content", "shared", "vite.config.ts"]
+  "include": ["popup", "background", "content", "src", "vite.config.ts"]
 }

@@ -1,7 +1,7 @@
 import { useShallow } from 'zustand/shallow'
-import { useHandyStore } from '../../../shared/store/useHandyStore'
-import styles from './DeviceInfo.module.scss'
 import clsx from 'clsx'
+import { useHandyStore } from '@/store/useHandyStore'
+import styles from './DeviceInfo.module.scss'
 
 export const DeviceInfo = () => {
   const { isConnected, deviceInfo, isPlaying } = useHandyStore(
