@@ -19,18 +19,49 @@ export const DeviceInfo = () => {
         isConnected ? styles.connected : styles.disconnected,
       )}
     >
-      <h3 className='header3'>
-        Device {isConnected ? 'connected' : 'disconnected'}
+      <h3 className={styles.title}>
+        <span
+          className={clsx(
+            styles.statusDot,
+            isConnected ? styles.connected : styles.disconnected,
+          )}
+        ></span>
+        Device {isConnected ? 'Connected' : 'Disconnected'}
       </h3>
-      <ul>
-        <li>
-          <strong>Firmware:</strong> {deviceInfo?.fw_version || ''}
+
+      <ul className={styles.infoList}>
+        <li className={styles.infoItem}>
+          <span className={styles.label}>Firmware:</span>
+          <span
+            className={clsx(
+              styles.value,
+              !deviceInfo?.fw_version && styles.empty,
+            )}
+          >
+            {deviceInfo?.fw_version || 'Not available'}
+          </span>
         </li>
-        <li>
-          <strong>Model:</strong> {deviceInfo?.hw_model_name || ''}
+        <li className={styles.infoItem}>
+          <span className={styles.label}>Model:</span>
+          <span
+            className={clsx(
+              styles.value,
+              !deviceInfo?.hw_model_name && styles.empty,
+            )}
+          >
+            {deviceInfo?.hw_model_name || 'Not available'}
+          </span>
         </li>
-        <li>
-          <strong>Status:</strong> {isPlaying ? 'Playing' : 'Stopped'}
+        <li className={styles.infoItem}>
+          <span className={styles.label}>Status:</span>
+          <span
+            className={clsx(
+              styles.value,
+              isPlaying ? styles.playing : styles.stopped,
+            )}
+          >
+            {isPlaying ? 'Playing' : 'Stopped'}
+          </span>
         </li>
       </ul>
     </div>

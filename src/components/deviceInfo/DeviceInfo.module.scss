@@ -1,15 +1,81 @@
 .deviceInfo {
-  padding: 12px;
+  padding: 16px;
   background-color: hsl(var(--color-bg));
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid hsl(var(--color-border));
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
 
   &.connected {
-    background-color: rgba(0, 255, 0, 0.1);
-    border-color: rgba(0, 255, 0, 0.4);
+    background-color: rgba(76, 175, 80, 0.08);
+    border-color: rgba(76, 175, 80, 0.4);
   }
+
   &.disconnected {
-    background-color: rgba(255, 0, 0, 0.1);
-    border-color: rgba(255, 0, 0, 0.4);
+    background-color: rgba(244, 67, 54, 0.08);
+    border-color: rgba(244, 67, 54, 0.4);
+  }
+
+  .title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .statusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+
+    &.connected {
+      background-color: #4caf50;
+      box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    }
+
+    &.disconnected {
+      background-color: #f44336;
+      box-shadow: 0 0 5px rgba(244, 67, 54, 0.5);
+    }
+  }
+
+  .infoList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    .infoItem {
+      display: flex;
+      gap: 0.5rem;
+      padding: 6px 0;
+      font-size: 0.9rem;
+
+      .label {
+        font-weight: 500;
+        min-width: 80px;
+      }
+
+      .value {
+        color: hsl(var(--color-font-light));
+
+        &.playing {
+          color: #4caf50;
+          font-weight: 500;
+        }
+
+        &.stopped {
+          color: #9e9e9e;
+        }
+
+        &.empty {
+          color: #bdbdbd;
+          font-style: italic;
+        }
+      }
+    }
   }
 }

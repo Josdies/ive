@@ -290,9 +290,16 @@ export const ContentApp = ({ script }: { script: string }) => {
     return null
   }
 
+  // Get status text based on connection state
+  const getStatusText = () => {
+    if (!isConnected) return 'Disconnected'
+    if (!isScriptSetup) return 'Setting up...'
+    if (isPlaying) return 'Syncing'
+    return 'Click to sync'
+  }
+
   return (
     <div className={styles.contentApp}>
-      {/* Simple clickable indicator */}
       <div
         className={`${styles.syncIndicator} ${
           !isConnected
@@ -304,13 +311,7 @@ export const ContentApp = ({ script }: { script: string }) => {
         onClick={handleForceSyncClick}
       >
         <div className={styles.statusDot}></div>
-        {!isConnected
-          ? 'Disconnected'
-          : !isScriptSetup
-            ? 'Setting up...'
-            : isPlaying
-              ? 'Syncing'
-              : 'Click to sync'}
+        <span className={styles.statusText}>{getStatusText()}</span>
       </div>
     </div>
   )

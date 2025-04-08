@@ -13,13 +13,17 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: transform 0.2s ease;
+    transition: all 0.3s ease;
     pointer-events: auto;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 
     &:hover {
       transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
     }
 
     &:active {
@@ -33,6 +37,7 @@
     }
 
     &.playing {
+      background-color: rgba(0, 0, 0, 0.85);
       .statusDot {
         background-color: #4caf50;
         animation: pulse 1.5s infinite;
@@ -40,6 +45,8 @@
     }
 
     &.disconnected {
+      background-color: rgba(40, 40, 40, 0.8);
+      opacity: 0.8;
       .statusDot {
         background-color: #f44336;
       }
@@ -51,6 +58,12 @@
       height: 10px;
       border-radius: 50%;
       background-color: #9e9e9e;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .statusText {
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
   }
 }
@@ -59,13 +72,16 @@
   0% {
     transform: scale(1);
     opacity: 1;
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
   }
   50% {
     transform: scale(1.2);
     opacity: 0.7;
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
   }
   100% {
     transform: scale(1);
     opacity: 1;
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
   }
 }

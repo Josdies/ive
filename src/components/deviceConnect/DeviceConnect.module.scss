@@ -1,65 +1,75 @@
 .deviceConnect {
-  padding: 12px 0;
+  padding: 16px 0;
+
+  .title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid hsl(var(--color-border));
+  }
 
   .errorMessage {
-    color: red;
-    margin-bottom: 12px;
-    padding: 8px 12px;
-    background-color: rgba(255, 0, 0, 0.05);
+    color: #f44336;
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: rgba(244, 67, 54, 0.08);
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-left: 3px solid #f44336;
   }
 
   .connectionForm {
-    margin-bottom: 16px;
+    margin-bottom: 1.5rem;
+
+    .keyInput {
+      margin-bottom: 12px;
+    }
 
     .connectButton {
       margin-top: 12px;
       width: 100%;
-    }
-  }
+      font-weight: 500;
+      transition: all 0.2s ease;
 
-  .deviceStatus {
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 16px;
+      &.connected {
+        background-color: #4caf50;
+        border-color: #4caf50;
+        color: white;
 
-    &.connected {
-      background-color: rgba(0, 255, 0, 0.1);
-      border: 1px solid rgba(0, 255, 0, 0.3);
-    }
-
-    &.disconnected {
-      background-color: rgba(255, 0, 0, 0.1);
-      border: 1px solid rgba(255, 0, 0, 0.3);
-    }
-
-    h3 {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-
-    .deviceDetails {
-      p {
-        margin: 4px 0;
-        font-size: 14px;
+        &:hover {
+          background-color: #388e3c;
+          border-color: #388e3c;
+        }
       }
     }
   }
 
   .settings {
-    h3 {
-      font-size: 16px;
-      margin-bottom: 12px;
+    margin-top: 1.5rem;
+
+    .title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid hsl(var(--color-border));
     }
 
     .settingsGroup {
-      margin-bottom: 20px;
+      margin-bottom: 1.25rem;
 
-      label {
+      .settingLabel {
         display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+        font-weight: 500;
+
+        .valueDisplay {
+          color: hsl(var(--color-font-light));
+          margin-left: 0.5rem;
+        }
       }
 
       .slider {

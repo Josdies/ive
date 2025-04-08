@@ -92,17 +92,17 @@ export const DeviceConnect = () => {
 
   return (
     <div className={styles.deviceConnect}>
-      <h2 className='header3'>Device Connection</h2>
+      <h2 className={styles.title}>Device Connection</h2>
 
       {error && !isConnected && (
-        <div className={styles.errorMessage}>Error: {error}</div>
+        <div className={styles.errorMessage}>{error}</div>
       )}
 
       <div className={styles.connectionForm}>
         <input
           type='text'
-          className='input'
-          placeholder='Connection Key'
+          className={clsx('input', styles.keyInput)}
+          placeholder='Enter connection key'
           value={connectionKey}
           onChange={(e) => setConnectionKey(e.target.value)}
           disabled={isConnected}
@@ -111,8 +111,8 @@ export const DeviceConnect = () => {
         <button
           className={clsx(
             'button primary',
-            isConnected && 'active',
             styles.connectButton,
+            isConnected && styles.connected,
           )}
           onClick={handleConnect}
         >
@@ -124,11 +124,15 @@ export const DeviceConnect = () => {
 
       {isConnected && (
         <div className={styles.settings}>
-          <h3>Settings</h3>
+          <h3 className={styles.title}>Device Settings</h3>
 
           <div className={styles.settingsGroup}>
-            <label htmlFor='offset'>
-              Timing Offset: <strong>{currentOffset}ms</strong>
+            <label htmlFor='offset' className={styles.settingLabel}>
+              Timing Offset
+              <span className={styles.valueDisplay}>
+                {currentOffset > 0 ? '+' : ''}
+                {currentOffset}ms
+              </span>
             </label>
             <Slider
               id='offset'
@@ -140,19 +144,22 @@ export const DeviceConnect = () => {
               marks={[
                 { value: -500, label: '-500ms' },
                 { value: 0, label: '0' },
-                { value: 500, label: '500ms' },
+                { value: 500, label: '+500ms' },
               ]}
               className={styles.slider}
+              size='md'
+              color='teal'
+              thumbSize={16}
             />
           </div>
 
           <div className={styles.settingsGroup}>
-            <label htmlFor='stroke-range'>
-              Stroke Range:{' '}
-              <strong>
+            <label htmlFor='stroke-range' className={styles.settingLabel}>
+              Stroke Range
+              <span className={styles.valueDisplay}>
                 {(strokeRange[0] * 100).toFixed(0)}% -{' '}
                 {(strokeRange[1] * 100).toFixed(0)}%
-              </strong>
+              </span>
             </label>
             <RangeSlider
               id='stroke-range'
@@ -169,6 +176,9 @@ export const DeviceConnect = () => {
                 { value: 1, label: '100%' },
               ]}
               className={styles.slider}
+              size='md'
+              color='teal'
+              thumbSize={16}
             />
           </div>
         </div>

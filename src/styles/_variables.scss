@@ -1,11 +1,13 @@
 :root {
   // Fonts
-  --font-brand: 'Poppins', sans-serif;
+  --font-brand:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 
   // Colors
   // Font
   --color-font: 0, 0%, 11%;
-  --color-font-light: 0, 0%, 55%;
+  --color-font-light: 0, 0%, 45%;
   --color-font-inverse: 0, 0%, 98%;
   // Background
   --color-bg: 0, 0%, 98%;
@@ -20,38 +22,47 @@
   --color-bg-button-hover-inverse: 0, 0%, 93%;
   --color-bg-input: 0, 0%, 98%;
   // Border
-  --color-border: 0, 0%, 93%;
+  --color-border: 0, 0%, 88%;
   --color-border-inverse: 0, 0%, 11%;
   // Shadow
-  --color-shadow-button: 0px 6px 12px 0px hsla(0, 0%, 11%, 0.25);
+  --color-shadow-button: 0px 4px 8px 0px rgba(0, 0, 0, 0.1);
+  --color-shadow-card: 0px 2px 8px rgba(0, 0, 0, 0.08);
+
+  // Brand colors
+  --color-primary: #4caf50;
+  --color-primary-light: #81c784;
+  --color-primary-dark: #388e3c;
+  --color-error: #f44336;
+  --color-error-light: #e57373;
+  --color-error-dark: #d32f2f;
+  --color-warning: #ff9800;
+  --color-warning-light: #ffb74d;
+  --color-warning-dark: #f57c00;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    // Fonts
-    --font-brand: 'Poppins', sans-serif;
-
-    // Colors
     // Font
     --color-font: 0, 0%, 98%;
-    --color-font-light: 0, 0%, 63%;
+    --color-font-light: 0, 0%, 70%;
     --color-font-inverse: 0, 0%, 11%;
     // Background
-    --color-bg: 0, 0%, 11%;
-    --color-bg-footer: 0, 0%, 20%;
-    --color-bg-primary: 0, 0%, 11%;
-    --color-bg-secondary: 0, 0%, 14%;
+    --color-bg: 0, 0%, 10%;
+    --color-bg-footer: 0, 0%, 15%;
+    --color-bg-primary: 0, 0%, 15%;
+    --color-bg-secondary: 0, 0%, 18%;
     --color-bg-primary-inverse: 0, 0%, 100%;
     --color-bg-secondary-inverse: 0, 0%, 98%;
-    --color-bg-button: 0, 0%, 20%;
-    --color-bg-button-inverse: 0, 0%, 20%;
+    --color-bg-button: 0, 0%, 25%;
+    --color-bg-button-inverse: 0, 0%, 25%;
     --color-bg-button-hover: 0, 0%, 93%;
-    --color-bg-button-hover-inverse: 0, 0%, 16%;
+    --color-bg-button-hover-inverse: 0, 0%, 20%;
     --color-bg-input: 0, 0%, 20%;
     // Border
-    --color-border: 0, 0%, 20%;
+    --color-border: 0, 0%, 25%;
     --color-border-inverse: 0, 0%, 93%;
     // Shadow
-    --color-shadow-button: 0px 6px 12px 0px hsla(0, 0%, 89%, 0.25);
+    --color-shadow-button: 0px 4px 8px 0px rgba(0, 0, 0, 0.3);
+    --color-shadow-card: 0px 2px 8px rgba(0, 0, 0, 0.25);
   }
 }
