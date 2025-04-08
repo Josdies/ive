@@ -155,7 +155,7 @@ export const DeviceConnect = () => {
               ]}
               className={styles.slider}
               size='md'
-              color='teal'
+              color='#7b024d'
               thumbSize={16}
             />
           </div>
@@ -184,7 +184,7 @@ export const DeviceConnect = () => {
               ]}
               className={styles.slider}
               size='md'
-              color='teal'
+              color='#7b024d'
               thumbSize={16}
             />
           </div>

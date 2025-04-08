@@ -3,12 +3,12 @@
 
   .syncIndicator {
     position: fixed;
-    top: 20px;
-    right: 20px;
-    background-color: rgba(0, 0, 0, 0.8);
+    top: 16px;
+    right: 16px;
+    background-color: rgba(123, 2, 77, 0.2);
     color: white;
     padding: 8px 16px;
-    border-radius: 20px;
+    border-radius: 16px;
     font-size: 14px;
     display: flex;
     align-items: center;
@@ -16,14 +16,14 @@
     transition: all 0.3s ease;
     pointer-events: auto;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 8px rgba(123, 2, 77, 0.2);
     z-index: 9999;
     backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(123, 2, 77, 0.3);
 
     &:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 4px 16px rgba(123, 2, 77, 0.6);
     }
 
     &:active {
@@ -37,7 +37,7 @@
     }
 
     &.playing {
-      background-color: rgba(0, 0, 0, 0.85);
+      background-color: rgba(18, 18, 18, 0.95);
       .statusDot {
         background-color: #4caf50;
         animation: pulse 1.5s infinite;
@@ -45,7 +45,7 @@
     }
 
     &.disconnected {
-      background-color: rgba(40, 40, 40, 0.8);
+      background-color: rgba(40, 40, 40, 0.9);
       opacity: 0.8;
       .statusDot {
         background-color: #f44336;
@@ -54,11 +54,11 @@
     }
 
     .statusDot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background-color: #9e9e9e;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      background-color: #909090;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
     }
 
     .statusText {
@@ -77,11 +77,11 @@
   50% {
     transform: scale(1.2);
     opacity: 0.7;
-    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+    box-shadow: 0 0 0 8px rgba(123, 2, 77, 0);
   }
   100% {
     transform: scale(1);
     opacity: 1;
-    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    box-shadow: 0 0 0 0 rgba(123, 2, 77, 0);
   }
 }
