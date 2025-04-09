@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { useShallow } from 'zustand/shallow'
 import { useHandyStore } from '@/store/useHandyStore'
+import { SyncIndicator } from '@/components/syncIndicator/SyncIndicator'
 import styles from './ContentApp.module.scss'
 
 export const ContentApp = ({ script }: { script: string }) => {
@@ -287,29 +288,14 @@ export const ContentApp = ({ script }: { script: string }) => {
     return null
   }
 
-  // Get status text based on connection state
-  const getStatusText = () => {
-    if (!isConnected) return 'Disconnected'
-    if (!isScriptSetup) return 'Setting up...'
-    if (isPlaying) return 'Syncing'
-    return 'Click to sync'
-  }
-
   return (
     <div className={styles.contentApp}>
-      <div
-        className={`${styles.syncIndicator} ${
-          !isConnected
-            ? styles.disconnected
-            : isPlaying
-              ? styles.playing
-              : styles.connected
-        }`}
-        onClick={handleForceSyncClick}
-      >
-        <div className={styles.statusDot}></div>
-        <span className={styles.statusText}>{getStatusText()}</span>
-      </div>
+      <SyncIndicator
+        isConnected={isConnected}
+        isPlaying={isPlaying}
+        isScriptSetup={isScriptSetup}
+        onSyncClick={handleForceSyncClick}
+      />
     </div>
   )
 }
