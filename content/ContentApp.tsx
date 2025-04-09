@@ -263,7 +263,6 @@ export const ContentApp = ({ script }: { script: string }) => {
     }
   }, [isConnected, stop])
 
-  // Force sync
   const handleForceSyncClick = () => {
     if (!videoElement || !isConnected || !isScriptSetup) return
 

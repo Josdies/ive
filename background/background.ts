@@ -1,23 +1,5 @@
-import { HandyApi, createHandyApi, DeviceInfo } from '../src/api/handyApi'
-
-// Type definitions
-type HandyConfig = {
-  connectionKey: string
-  offset: number
-  stroke: {
-    min: number
-    max: number
-  }
-  wasManuallyDisconnected: boolean
-}
-
-type HandyState = {
-  config: HandyConfig
-  isConnected: boolean
-  deviceInfo: DeviceInfo | null
-  isPlaying: boolean
-  error: string | null
-}
+import { HandyApi, createHandyApi } from '@/api/handyApi'
+import type { HandyState } from '@/store/useHandyStore'
 
 // Constants from environment vars
 const HANDY_BASE_URL = 'https://www.handyfeeling.com/api/handy-rest/v3'
@@ -174,7 +156,11 @@ async function connectDevice() {
     })
 
     // Initialize device settings
-    await handyApi.getOffset()
+    const offset = await handyApi.getOffset()
+    if (offset) {
+      state.config.offset = offset
+    }
+
     const strokeSettings = await handyApi.getStrokeSettings()
 
     if (strokeSettings) {
@@ -183,13 +169,6 @@ async function connectDevice() {
         max: strokeSettings.max,
       }
     }
-
-    // Apply current offset and stroke settings to device
-    await handyApi.setOffset(state.config.offset)
-    await handyApi.setStrokeSettings({
-      min: state.config.stroke.min,
-      max: state.config.stroke.max,
-    })
 
     // Save updated config
     saveConfig()

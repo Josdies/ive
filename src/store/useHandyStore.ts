@@ -14,7 +14,7 @@ type HandyConfig = {
 }
 
 // Main Handy state
-type HandyState = {
+export type HandyState = {
   config: HandyConfig
   isConnected: boolean
   deviceInfo: DeviceInfo | null

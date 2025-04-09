@@ -3,8 +3,8 @@
 
   .syncIndicator {
     position: fixed;
-    top: 16px;
-    right: 16px;
+    top: 32px;
+    right: 32px;
     background-color: rgba(123, 2, 77, 0.2);
     color: white;
     padding: 8px 16px;
@@ -37,7 +37,6 @@
     }
 
     &.playing {
-      background-color: rgba(18, 18, 18, 0.95);
       .statusDot {
         background-color: #4caf50;
         animation: pulse 1.5s infinite;
@@ -45,12 +44,11 @@
     }
 
     &.disconnected {
-      background-color: rgba(40, 40, 40, 0.9);
       opacity: 0.8;
+
       .statusDot {
         background-color: #f44336;
       }
-      cursor: not-allowed;
     }
 
     .statusDot {
