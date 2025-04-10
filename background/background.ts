@@ -342,30 +342,50 @@ async function syncVideoTime(videoTime: number) {
   }
 }
 
+// Keep track of tabs with active content scripts
+const activeTabs = new Set<number>()
+
 // Broadcast state to all connected contexts
 function broadcastState() {
-  chrome.runtime
-    .sendMessage({
-      type: 'handy_state_update',
-      state: {
-        config: state.config,
-        isConnected: state.isConnected,
-        deviceInfo: state.deviceInfo,
-        isPlaying: state.isPlaying,
-        error: state.error,
-      },
-    })
-    .catch((err) => {
-      // This error is expected when no listeners are active
-      if (!err.message.includes('Could not establish connection')) {
-        console.error('Error broadcasting state:', err)
+  const stateMessage = {
+    type: 'handy_state_update',
+    state: {
+      config: state.config,
+      isConnected: state.isConnected,
+      deviceInfo: state.deviceInfo,
+      isPlaying: state.isPlaying,
+      error: state.error,
+    },
+  }
+
+  // Send to popup using runtime messaging (which works fine for popup)
+  chrome.runtime.sendMessage(stateMessage).catch((err) => {
+    // This error is expected when popup is not open
+    if (!err.message.includes('Could not establish connection')) {
+      console.error('Error broadcasting to popup:', err)
+    }
+  })
+
+  // Send to all active content script tabs
+  activeTabs.forEach((tabId) => {
+    chrome.tabs.sendMessage(tabId, stateMessage).catch((err) => {
+      console.error(`Error sending to tab ${tabId}:`, err)
+      // If we get a connection error, assume tab is no longer valid
+      if (err.message.includes('Could not establish connection')) {
+        activeTabs.delete(tabId)
       }
     })
+  })
 }
 
 // Message handler
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('Background received message:', message.type, message)
+  console.log('Background received message:', message.type, message, sender)
+
+  // Register tab if it's a content script and has a tab ID
+  if (sender.tab && sender.tab.id) {
+    activeTabs.add(sender.tab.id)
+  }
 
   const handleAsyncOperation = async () => {
     try {
@@ -404,6 +424,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         case 'handy_sync_video_time':
           return await syncVideoTime(message.videoTime)
+
+        case 'handy_context_active':
+          activeContexts[message.context as keyof typeof activeContexts] =
+            message.active
+
+          // If this is a content script becoming active/inactive and we have tab info
+          if (
+            message.context === 'contentScript' &&
+            sender.tab &&
+            sender.tab.id
+          ) {
+            if (message.active) {
+              activeTabs.add(sender.tab.id)
+            } else {
+              activeTabs.delete(sender.tab.id)
+            }
+          }
+
+          updateConnectionState()
+          return true
 
         default:
           return { error: 'Unknown message type' }
@@ -453,18 +493,8 @@ async function updateConnectionState() {
   }
 }
 
-// Listen for context activation/deactivation
-chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
-  if (message.type === 'handy_context_active') {
-    console.log(
-      `Context ${message.context} is now ${message.active ? 'active' : 'inactive'}`,
-    )
-    activeContexts[message.context as keyof typeof activeContexts] =
-      message.active
-    updateConnectionState()
-    sendResponse(true)
-  }
-  return true // Keep listening
+chrome.tabs.onRemoved.addListener((tabId) => {
+  activeTabs.delete(tabId)
 })
 
 init().catch(console.error)
